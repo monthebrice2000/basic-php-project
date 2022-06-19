@@ -1,0 +1,32 @@
+version : "3"
+
+services:
+  php:
+    build: .
+    image: "php:8.1-apache"
+    ports:
+      - "3001:80"
+    volumes:
+      - .:/var/www/html
+    command: bash -c "docker-php-ext-install mysqli && docker-php-ext-enable mysqli && apache2-foreground"
+    working_dir: "/var/www/html"
+    container_name: php_server
+    links:
+      - db
+    networks:
+      - front
+
+  db:
+    image : "mysql:5.6"
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: "mysql_name"
+    volumes:
+      - ${PWD}/data:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    networks:
+      - front
+
+
+networks:
+  front:
